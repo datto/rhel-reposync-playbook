@@ -1,0 +1,6 @@
+---
+- hosts:
+    - mirrors
+  roles:
+    - install_reposync
+  become: yes

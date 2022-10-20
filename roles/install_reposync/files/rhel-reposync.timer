@@ -1,0 +1,11 @@
+[Unit]
+Description=Syncs repos from Red Hat for mirroring
+
+[Timer]
+Unit=rhel-reposync.service
+OnStartupSec=5 minutes
+OnUnitActiveSec=6 hours
+Persistent=true
+
+[Install]
+WantedBy=timers.target

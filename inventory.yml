@@ -1,0 +1,6 @@
+mirrors:
+  hosts:
+    10.0.130.32:
+  vars:
+    ansible_ssh_user: datto
+    rhel_reposync_sync_dir: /home/datto/rhel-reposync

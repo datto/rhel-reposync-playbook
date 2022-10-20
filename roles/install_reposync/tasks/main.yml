@@ -1,0 +1,51 @@
+---
+- name: Install reposync dnf command
+  ansible.builtin.dnf:
+    name: "dnf-command(reposync)"
+    state: present
+
+- name: Install rhel-reposync script
+  ansible.builtin.template:
+    src: 'files/rhel-reposync.sh'
+    dest: '/usr/local/bin/rhel-reposync'
+    mode: '0755'
+    owner: root
+    group: root
+    
+- name: Systemd reposync units
+  ansible.builtin.template:
+    src: 'files/rhel-reposync.{{ item }}'
+    dest: '/etc/systemd/system/rhel-reposync.{{ item }}'
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+    - service
+    - timer
+  register: units
+  tags: [systemd]
+
+- name: Systemd reposync config
+  ansible.builtin.template:
+    src: 'templates/etc-rhel-reposync.j2'
+    dest: '/usr/local/etc/rhel-reposync'
+    owner: root
+    group: root
+    mode: '0644'
+  tags: [systemd]
+
+- name: Rhel-reposync target dir
+  ansible.builtin.file:
+    state: directory
+    dest: "{{ rhel_reposync_sync_dir }}"
+    owner: datto
+    group: datto
+    mode: '0755'
+
+- name: Enable reposync timer
+  ansible.builtin.systemd:
+    name: rhel-reposync.timer
+    state: started
+    enabled: true
+    daemon_reload: "{{ units.changed }}"
+  tags: [systemd]
