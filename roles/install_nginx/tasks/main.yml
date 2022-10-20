@@ -1,0 +1,81 @@
+---
+- name: Configure external volume for /srv
+  block:
+    - name: Partition mirror volume
+      community.general.parted:
+        device: '/dev/vdb'
+        number: 1
+        label: gpt
+        fs_type: xfs
+        part_start: '0%'
+        part_end: '100%'
+        state: present
+
+    - name: Create XFS filesystem on mirror volume
+      community.general.filesystem:
+        dev: '/dev/vdb1'
+        fstype: xfs
+
+    - name: Mount mirror volume
+      ansible.posix.mount:
+        src: '/dev/vdb1'
+        path: '/srv'
+        state: mounted
+        fstype: xfs
+        opts: defaults
+        passno: '2'
+        boot: true
+  when: use_external_srv_volume
+  tags: [storage]
+
+- name: Install nginx
+  ansible.builtin.dnf:
+    name: nginx
+    state: present
+    update_cache: true
+
+- name: Create docroot
+  ansible.builtin.file:
+    path: '/srv/www/current'
+    state: directory
+    owner: nginx
+    group: nginx
+    mode: '0755'
+  notify: docroot-selinux
+
+- name: nginx running
+  ansible.builtin.systemd:
+    name: nginx
+    enabled: true
+    state: started
+
+- name: Register systemd service fact
+  ansible.builtin.service_facts:
+  tags: [firewalld]
+
+- name: Open HTTP port
+  ansible.posix.firewalld:
+    service: http
+    state: enabled
+    permanent: true
+    immediate: true
+  # The test box I was developing on had firewalld enabled, but the version I booted from a cloud
+  # image in OpenStack didn't even have it installed, maybe because it's expected that the cloud
+  # provider will handle those sorts of rules outside the host? Not sure.
+  when: "'firewalld.service' in ansible_facts.services and ansible_facts.services['firewalld.service'].state == 'running'"
+  tags: [firewalld]
+
+- name: Nginx config
+  ansible.builtin.template:
+    src: 'files/nginx.conf'
+    dest: '/etc/nginx/nginx.conf'
+    owner: root
+    group: root
+    mode: '0644'
+  register: nginx_config
+
+- name: Nginx restart
+  ansible.builtin.systemd:
+    name: nginx
+    state: restarted
+  when: nginx_config.changed | bool

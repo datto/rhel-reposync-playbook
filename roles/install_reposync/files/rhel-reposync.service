@@ -6,5 +6,5 @@ After=local-fs.target network-online.target
 Type=oneshot
 EnvironmentFile=/usr/local/etc/rhel-reposync
 ExecStart=/usr/local/bin/rhel-reposync
-User=datto
-Group=datto
+User=nginx
+Group=nginx

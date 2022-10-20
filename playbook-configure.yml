@@ -2,5 +2,7 @@
 - hosts:
     - mirrors
   roles:
+    - install_nginx
     - install_reposync
   become: yes
+  gather_facts: no

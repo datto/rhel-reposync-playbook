@@ -1,0 +1,17 @@
+---
+# /srv/www doesn't exist by default, so it can't be labeled
+# The default policy does apply httpd_sys_content_t to this dir though, so we
+# just need to restorecon it.
+- name: Restore SELinux context for docroot
+  listen: docroot-selinux
+  ansible.builtin.command: 'restorecon -rv /srv/www'
+
+- name: Restore SELinux context for certs
+  listen: certs-selinux
+  ansible.builtin.command: 'restorecon -rv /etc/pki/nginx'
+
+- name: Restart nginx
+  listen: restart-nginx
+  ansible.builtin.systemd:
+    name: nginx
+    state: restarted

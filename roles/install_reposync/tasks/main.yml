@@ -38,8 +38,8 @@
   ansible.builtin.file:
     state: directory
     dest: "{{ rhel_reposync_sync_dir }}"
-    owner: datto
-    group: datto
+    owner: nginx
+    group: nginx
     mode: '0755'
 
 - name: Enable reposync timer
