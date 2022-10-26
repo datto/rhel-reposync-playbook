@@ -1,4 +1,3 @@
----
 - name: Configure external volume for /srv
   block:
     - name: Partition mirror volume
@@ -53,9 +52,9 @@
   ansible.builtin.service_facts:
   tags: [firewalld]
 
-- name: Open HTTP port
+- name: Open HTTP(S) port(s)
   ansible.posix.firewalld:
-    service: http
+    service: "{{ item }}"
     state: enabled
     permanent: true
     immediate: true
@@ -63,19 +62,47 @@
   # image in OpenStack didn't even have it installed, maybe because it's expected that the cloud
   # provider will handle those sorts of rules outside the host? Not sure.
   when: "'firewalld.service' in ansible_facts.services and ansible_facts.services['firewalld.service'].state == 'running'"
+  loop: "{{ firewalld_http_services }}"
   tags: [firewalld]
 
 - name: Nginx config
   ansible.builtin.template:
-    src: 'files/nginx.conf'
-    dest: '/etc/nginx/nginx.conf'
+    src: '{{ nginx_config_file }}'
+    dest: '/etc/nginx/conf.d/rhel-mirror.conf'
     owner: root
     group: root
     mode: '0644'
   register: nginx_config
+  notify: restart-nginx
+  tags: [https]
 
-- name: Nginx restart
-  ansible.builtin.systemd:
-    name: nginx
-    state: restarted
-  when: nginx_config.changed | bool
+- name: HTTPS certs
+  block:
+    - name: Cert directories
+      ansible.builtin.file:
+        path: '{{ item }}'
+        state: directory
+        owner: root
+        group: root
+        mode: '0700'
+      loop:
+        - '/etc/pki/nginx'
+        - '/etc/pki/nginx/private'
+      notify: restart-nginx
+
+    - name: Install certs
+      ansible.builtin.template:
+        src: '{{ item.src }}'
+        dest: '{{ item.dest }}'
+        owner: root
+        group: root
+        mode: '0600'
+      loop:
+        - { src: '{{ nginx_full_bundle_https_cert }}', dest: '/etc/pki/nginx/server.crt'}
+        - { src: '{{ nginx_private_server_https_key }}', dest: '/etc/pki/nginx/private/server.key'}
+      notify:
+        - certs-selinux
+        - restart-nginx
+      register: nginx_certs
+  when: use_https
+  tags: [https]

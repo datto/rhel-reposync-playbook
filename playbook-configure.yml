@@ -6,4 +6,4 @@
     - install_reposync
     - install_debuginfod
   become: yes
-  gather_facts: no
+  gather_facts: yes

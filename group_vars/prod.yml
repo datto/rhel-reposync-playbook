@@ -1,0 +1,6 @@
+---
+#mirror_fqdn: 'rhel-mirror.example.net'
+use_external_srv_volume: true
+#use_https: true
+#nginx_full_bundle_https_cert: '/path/to/bundle.crt'
+#nginx_private_server_https_key: '/path/to/server.key'

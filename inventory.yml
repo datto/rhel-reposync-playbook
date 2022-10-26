@@ -1,7 +1,10 @@
 mirrors:
-  hosts:
-    10.0.130.32:
-      ansible_ssh_user: datto
-      use_external_srv_volume: false
-    10.41.213.250:
-      ansible_ssh_user: cloud-user
+  children:
+    dev:
+      hosts:
+        rhel-mirror-dev.example.net:
+          ansible_ssh_user: cloud-user
+    prod:
+      hosts:
+        rhel-mirror.example.net:
+          ansible_ssh_user: cloud-user

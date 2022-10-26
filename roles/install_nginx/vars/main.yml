@@ -1,0 +1,2 @@
+firewalld_http_services: "{{ ['http', 'https'] if use_https else ['http'] }}"
+nginx_config_file: "{{ 'templates/nginx-https.conf' if use_https else 'templates/nginx-http.conf' }}"

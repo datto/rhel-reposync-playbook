@@ -1,2 +1,4 @@
 ---
+mirror_fqdn: "{{ ansible_fqdn }}"
+use_https: false
 use_external_srv_volume: true
