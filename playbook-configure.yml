@@ -4,5 +4,6 @@
   roles:
     - install_nginx
     - install_reposync
+    - install_debuginfod
   become: yes
   gather_facts: no

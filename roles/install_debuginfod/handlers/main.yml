@@ -1,0 +1,6 @@
+---
+- name: Restart debuginfod
+  listen: restart-debuginfod
+  ansible.builtin.systemd:
+    name: debuginfod
+    state: restarted

@@ -1,0 +1,33 @@
+---
+- name: Install debuginfod
+  ansible.builtin.dnf:
+    name: elfutils-debuginfod
+    state: present 
+
+- name: debuginfod running
+  ansible.builtin.systemd:
+    name: debuginfod
+    enabled: true
+    state: started
+
+- name: Register systemd service fact
+  ansible.builtin.service_facts:
+  tags: [firewalld]
+
+- name: Open debuginfod port
+  ansible.posix.firewalld:
+    port: 8002/tcp
+    state: enabled
+    permanent: true
+    immediate: true
+  when: "'firewalld.service' in ansible_facts.services and ansible_facts.services['firewalld.service'].state == 'running'"
+  tags: [firewalld]
+
+- name: debuginfod config
+  ansible.builtin.template:
+    src: 'files/debuginfod'
+    dest: '/etc/sysconfig/debuginfod'
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart-debuginfod

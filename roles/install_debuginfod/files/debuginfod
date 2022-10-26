@@ -1,0 +1,15 @@
+#
+DEBUGINFOD_PORT="8002"
+#DEBUGINFOD_VERBOSE="-v"
+
+# some common places to find trustworthy ELF/DWARF files and RPMs
+DEBUGINFOD_PATHS="-t43200 -F -R {{ debuginfod_paths }}"
+
+# prefer reliability/durability over performance
+#DEBUGINFOD_PRAGMAS="-D 'pragma synchronous=full;'"
+
+# upstream debuginfods
+DEBUGINFOD_URLS="{{ debuginfod_urls }}"
+DEBUGINFOD_TIMEOUT="5"
+DEBUGINFOD_RETRY_LIMIT="2"
+#DEBUGINFOD_CACHE_DIR=""

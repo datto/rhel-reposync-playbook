@@ -1,0 +1,3 @@
+---
+debuginfod_paths: /srv/www/current/RHEL
+debuginfod_urls: https://debuginfod.fedoraproject.org/
