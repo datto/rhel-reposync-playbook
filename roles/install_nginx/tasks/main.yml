@@ -106,3 +106,12 @@
       register: nginx_certs
   when: use_https
   tags: [https]
+
+- name: Add repo file
+  ansible.builtin.template:
+    src: 'templates/rhel.repo.tpl'
+    dest: '/srv/www/current/rhel.repo'
+    owner: nginx
+    group: nginx
+    mode: '0644'
+  tags: [repo]
