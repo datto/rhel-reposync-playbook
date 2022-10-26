@@ -1,2 +1,3 @@
 ---
 rhel_reposync_sync_dir: /srv/www/current
+rhel_reposync_max_tries: 3
