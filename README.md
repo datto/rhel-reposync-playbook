@@ -2,6 +2,15 @@
 
 Ansible + sync scripts to configure a private RHEL mirror
 
+This enables setting up a private mirror to enable use-cases where
+reaching out to Red Hat Subscription Management (RHSM) is not possible
+(e.g. operating system image builds and airgapped deployments)
+without requiring a full Red Hat Satellite deployment.
+
+You still need to entitle your Red Hat Enterprise Linux systems
+for deployment, this just lets you turn off the subscription-management
+DNF plugin since you will not use RHSM for fetching content.
+
 ## Host setup
 Basic setup for this system requires a RHEL 9 server registered with subscription-manager:
 ```
