@@ -2,7 +2,7 @@
   block:
     - name: Partition mirror volume
       community.general.parted:
-        device: '/dev/vdb'
+        device: '{{ srv_volume_disk_device }}'
         number: 1
         label: gpt
         fs_type: xfs
@@ -12,12 +12,12 @@
 
     - name: Create XFS filesystem on mirror volume
       community.general.filesystem:
-        dev: '/dev/vdb1'
+        dev: '{{ srv_volume_part_device }}'
         fstype: xfs
 
     - name: Mount mirror volume
       ansible.posix.mount:
-        src: '/dev/vdb1'
+        src: '{{ srv_volume_part_device }}'
         path: '/srv'
         state: mounted
         fstype: xfs

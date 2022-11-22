@@ -14,9 +14,11 @@ For development, at least 250GB of disk is recommended. You may also configure a
 as with prod and set `use_external_srv_volume` to true in your inventory.
 
 ## Production
-Production use requires a separate volume at `/dev/vdb` - at least 1TB is recommended.
+Production use requires a separate volume -  At least 1TB is recommended.
 `use_external_srv_volume` is enabled for the prod group by default, and the playbook will
 automatically partition, format and mount this to `/srv`.
+`srv_volume_disk_device` and `srv_volume_part_device` can be used to configure the device used for
+the volume and the created partition - they default to `/dev/vdb`/`/dev/vdb1`.
 
 Ports 80/443 should be open for the repo server, and 8002 for debuginfo. On systems managing their
 own ingress via firewalld, the playbook will automatically configure those ports. Otherwise, they

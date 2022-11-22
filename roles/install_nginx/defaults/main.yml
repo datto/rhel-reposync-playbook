@@ -2,3 +2,5 @@
 mirror_fqdn: "{{ ansible_fqdn }}"
 use_https: false
 use_external_srv_volume: true
+srv_volume_disk_device: '/dev/vdb'
+srv_volume_part_device: '/dev/vdb1'
